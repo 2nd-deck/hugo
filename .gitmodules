@@ -1,0 +1,4 @@
+[submodule "public"]
+	path = public
+	url = https://github.com/2nd-deck/2nd-deck.github.io.git
+	branch = master
