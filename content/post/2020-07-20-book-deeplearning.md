@@ -11,7 +11,7 @@ categories: ["No.1 Hold"]
 *   이지스퍼블리싱 2020
 
 ## 감상
-AI, 머신러닝, 딥러닝, 강화학습등 말만 어려운데 그 안에 있는 선형회귀, 경사 하강법, 에포크등은 도저히 감이 잡히지 않았다. 딥러닝 관련 책 중 가장 쉬운걸로 빌린 것이 이 책! 구글 코랩으로 설치 압박이 적어 누구나 실습하면서 개념을 이해하기 쉬울 것 같다.  
+AI, 머신러닝, 딥러닝, 강화학습등 말만 어려운데 그 안에 있는 선형회귀, 경사 하강법, 에포크등은 도저히 감이 잡히지 않았다. 역시 딥러닝 입문서라고 하지만 책의 마지막까지 모든 내용을 다 이해할 수 없었다. 수식을 검증해보고 코딩을 손수 다하진 못했다. 꽤 오랜 시간 붙잡고 있었던 만큼 이 책을 발판삼아 앞으로 더 노력해야겠다.
 
 ## 주요내용
 ### 파이썬 패키지
@@ -106,205 +106,221 @@ neuron.fit(x, y)
     - 교차 검증은 훈련 세트를 k개의 작은 덩어리(폴드)로 나누고 그중 하나를 검증에 사용하고 나머지를 훈련에 사용한다. 검증에 사용하는 하나의 폴드는 k개가 번갈아 가면서 수행한다. k-폴드 교차 검증 
     - 사이킷런 model_selection 모듈의 cross_validate()함수로 교차 검증이 가능하다.
 
+### 배치 경사 하강법
 
++ 배치 경사 하강법으로 성능을 올린다.
+  - 단층 신경망의 경우 알고리즘을 1번 반복할 때 1개의 샘플을 사용하는 '확률적 경사 하강법'을 사용한다. 확률적 경사 하강법은 가중치를 1번 업데이트할 때 1개의 샘플을 사용하므로 손실 함수의 전역 최솟값을 불안정하게 찾는다.
+  - 배치 경사 하강법은 가중치를 1번 업데이트할 때 전체 샘플을 사용하므로 손실 함수의 전역 최솟값을 안정적으로 찾는다. 대신 알고리즘 1번 수행당 계산 비용이 많이 든다.
++ 행렬 연산  : 넘파이에서 np.dot(x, w)로 간단히 계산 가능
++ 사이킷런의 StandardScaler 클래스를 사용하여 데이터 세트의 특성을 평균이 0, 표준 편차가 1이 되도록 변환.
+StandardScaler 클래스 외에도 데이터 전처리에 관련된 클래스들은 sklearn.preprocessing 모듈 아래에 있으며 이런 클래스들을 변환기라 부른다.
++ 확률적 경사 하강법과 배치 경사 하강법은 에포크 마다 가중치 업데이트를 하는 횟수에 차이가 있기 떄문. 훈련 세트의 샘플 개수가 364개일 경우 확률적 경사 하강법은 100번의 에포크를 수행하면 총 36,400번의 가중치 업데이트가 일어남, 반면에 배치 경사 하강법은 전체 훈련 세트를 한 번에 계산한 다음 오차를 역전파하기 떄문에 100번의 에포크를 수행하면 가중치는 100번만 업데이트 됨. 따라서 확률적 경사 하강법보다 에프크 횟수를 크게 늘려주어야 함.
 
+### 다층 신경망
++ 하나의 층에 여러 개의 뉴런을 사용
+  - **XW**<sub>1</sub> + **b**<sub>1</sub> = **Z**<sub>1</sub>
++ 데이터 1개의 샘플에 있는 여러 특성의 값을 각 뉴런에 통과 시키면 여러 개의 출력값(a1,a2,...)이 나오는데, 이값들 중 하나만 골라 이진 분류에 사용할 수는 없으므로 출력값을 다시 모아 이진 분류를 수행할 기준값(z)를 만든다.
+  - **A**<sub>1</sub>**W**<sub>2</sub> + **b**<sub>2</sub> = **Z**<sub>2</sub>
++ ![다층행렬](/img/6_1_01.jpg)
+  - 2개의 층을 가진 신경망은 입력 행렬 **X**, 첫 번째 층의 가중치 행렬 **W**1과 절변 **b**1, 첫 번째 출력 **Z**1, 첫 번째 층의 활성화 출력 **A**1, 두 번째 층의 가중치 행렬 **W**2와 절편 **b**2, 두번째 층의 출력 **Z**2로 나타낼 수 있다.
++ ![다층행렬](/img/6_1_02.jpg)
+  - n개의 입력이 m개의 뉴런으로 입력되고 은닉층을 통과한 값들은 다시 출력층으로 모인다. 이것이 딥러닝이다.
+  - 활성화 함수는 층마다 다를 수 있지만 한 층에서는 같아야 한다.(이진 분류 문제는 출력층의 활성화 함수로 시그모이드 함수)
+  - 모든 뉴련이 연결되어 있으면 완전 연결 신경망이라고 한다.
++ 다층 신경망에 배치 경사 하강법을 이용하면 손실 함수가 매끄러운 곡선을 그리며 감소하지만 훈련하는 데 많은 시간이 소요된다.
 
-
-
-## 실습 5장
+### 미니 배치 경사 하강법 
++ 립러닝에서는 종종 아주 많은 양의 데이터를 사용하는데 배치 경사 하강법은은 이런경우에 사용하기 어렵다. 실전에서는 확률적 경사 하강법과 배치 경사 하강법의 장점을 절충한 미니 배치 경사 하강법이 널리 사용된다.
++ 미니 배치 경사 하강법의 구현은 배치 경사 하강법과 비슷하지만 에포크마다 전체 데이터를 사용하는 것이 아니라 조금씩 나누어 정방향 계산을 수행하고 그레이디언트를 구하여 가중치를 업데이트 한다.
++ 미니 배치의 크기는 16, 32, 64등 2의 배수를 사용.(미니배치의 크기가 1이면 확률적 경사하강법, 크기가 전체이면 배치 경사 하강법)
++ 미니 배치의 크기도 하이퍼파라미터이고 튜닝의 대상임.
++ 사이킷런을 사용하여 다층 신경망 훈련
 ```
-import numpy as np
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-cancer = load_breast_cancer()
-x = cancer.data
-y = cancer.target
-x_train_all, x_test, y_train_all, y_test = train_test_split(x, y, stratify=y, test_size=0.2, random_state=42)
-x_train, x_val, y_train, y_val = train_test_split(x_train_all, y_train_all, stratify=y_train_all, test_size=0.2, random_state=42)
-
-from sklearn.linear_model import SGDClassifier
-sgd = SGDClassifier(loss='log', random_state=42)
-sgd.fit(x_train, y_train)
-sgd.score(x_val, y_val)
-
+from sklearn.neural_network import MLPClassifier
+mlp = MLPClassifier(hidden_layer_sizes=(10, ), activation='logistic',
+                    solver='sgd', alpha=0.01, batch_size=32,
+                    learning_rate_init=0.1, max_iter=1000)
+mlp.fit(x_train_scaled, y_train)
+mlp.score(x_val_scaled, y_val)
 ```
-하이퍼파라미터 : loss와 같은 매개변수의 값은 가중치나 절편처럼 알아서 학습되지 않음. 사용자가 직접 선택.
-loss를 log로 했을떄 score는 0.8333, hinge로 했을때 score는 0.93859
-이러한 작업을 '모델을 튜닝한다'라고 함.
-테스트 모델로 모델을 튜닝하면 실전에서 좋은 성능을 기대하기 어렵다. 그러므로 검증 세트를 따로 준비 한다.
-train과 test를 8:2로 나눈뒤, train을 다시 검증세트와 8:2로 나눈다. 대략 6:2:2 = train : val : test
+  - 은닉층의 크기를 정의하는 hidden_layer_sizes(기본값(100,))
+  - 활성화 함수를 지정하는 activation(기본값은 렐루)
+  - 경사 하강법 알고리즘의 종류를 지정하는 매개변수 solver(기본값은 확률적 경사 하강법을 의미하는 sgd)
+  - 규제를 적용하기 위한 매개변수 alpha(사이킷런에서는 L2 규제만 지원. 기본값은 0.0001)
+  - 배치 크기, 학습률 초깃값, 에포크 횟수를 정하는 매개변수 batch_size, learning_rate_init, max_iter
+
+### 다중 분류
++ 이진분류와 비교하여 출력층의 개수만 다름. 이진 분류는 양성 클래스에 대한 확률 하나만 출력하고 다중 분류는 각 클래스에 대한 확률값을 출력.
++ 여러 출력층의 뉴런들이 각자의 확률을 표시하면 공정하게 비교하기가 어려움. 
++ 소프트맥스 함수 적용하여 출력 강도를 정규화함. 전체 출력값의 합을 1로 만든다는 의미.(e^i / (e^z1 + e^z2+...))
++ 출력층에 계산된 z1, z2,...의 값을 시그모이드 함수 공식을 이용하여 z에 대해 정리하면 z = - ln(1/y_hat -1)이 됨.
++ 다중 분류에서 출력층을 통과한 값들은 소프트맥스 함수를 거치며 적절한 확률값으로 변한다.
++ 다중 분류에는 로지스틱 손실 함수의 일반화 버전인 **크로스 엔트로피** 손실 함수를 사용.
+  - ![cross entropy](/img/6_1_03.jpg)
++ 원-핫 인코딩으로 변환 (예로 10개의 분류가 있다고 하면 타깃에 해당하는 값은 1이고 나머지 원소는 0인 배열로 만드는것.)
+
+### 텐서플로와 케라스를 사용한 신경망
++ 케라스는 딥러닝 패키지를 편리하게 사용하기 위해 만들어진 래퍼(wraffer) 패키지.
++ ![keras class](/img/7_1_01.jpg)
+  - 인공신경망 모델을 만들기 위한 Sequential 클래스와 완전 연결층을 만들기 위한 Dense 클래스
+  - 은닉층과 출력층을 Dense 클래스의 객체로 구성하고 각각의 객체를 Sequential 클래스 객체에 추가하면 완성
+
+### 합성곱
++ 합성곱 연산은 두함수에 적용하여 새로운 함수를 만드는 수학 연산자
+  - 두 배열 중 하나를 선택해 뒤집는다. (w<sup>r</sup>)
+  - 뒤집은 배열을 배열 x의 왼쪽 끝자리에 맞춰놓고 각 배열 원소끼리 곱한 후 더한다.
+  - 이후 w<sup>r</sup>을 오른쪽으로 한 칸씩 이동하여 각 배열 원소끼리 곱한후 더한다.
+  - 합성곱의 수식은 x * w로 나타낸다. 
+  - ![합성곱](/img/8_1_01.jpg)
+  - 합성곱 신경망은 합성곱 연산이 아니라 교차 상관을 사용
++ 교차 상관은 합성곱과 동일한 방법으로 연산이 진행되지만 '미끄러지는 배열을 뒤집지 않는다'는 점이 다르다
++ 모든 모델은 훈련하기 전에 가중치 배열의 요소들을 무작위로 초기화 한다. 그러므로 가중치를 뒤집든 뒤집지 않든 상관이 없다
++ 패딩(padding)은 원본 배열의 양 끝에 빈 원소를 추가 하는것. 스트라이드(stride)는 미끄러지는 배열의 간격을 조절하는 것. 이 두개념이 어떻게 적용되는지에 따라 밸리드 패딩, 풀 패딩, 세임 패딩이라고 부른다.
+  - 밸리드(valid) 패딩은 원본 배열에 패딩을 추가하지 않고 미끄러지는 배열이 원본 배열의 끝으로 갈 때까지 교차 상관을 수행.(원본 배열의 양끝의 원소의 연산 참여도가 낮다.)
+  - 풀패딩(full)은 원본 배열 원소의 연산 참여도를 동일하게 만든다. 이때 가상의 원소로 0을 사용하기 떄문에 이를 제로 패딩이라고 부른다.
+  - 세임(same) 패딩은 출력 배열의 길이를 원본 배열의 길이와 같아지도록 원본 배열에 제로 패딩을 추가한다.
+  - 합성곱 신경망에서는 대부분 세임 패딩을 사용하고 스트라이드를 1로 지정
++ 2차원 배열의 합성곱 수행 방향은 원본 배열의 왼쪽에서 오른쪽으로, 위에서 아래쪽으로 1칸씩 이동하며 배열 원소를 곱하면 된다.
++ 합성곱 신경망의 입력은 일반적으로 4차원 배열
+  - 입력(배치, 샘플의 높이, 샘플의 너비, 컬러 채널), 가중치(가중치 갯수, 가중치 너비, 가중치 높이, 채널)
+  - 일반적으로 합성곱의 입력과 가중치의 채널 수는 동일
++ 합성곱 신경망을 적용하면 입력을 일렬로 펼쳤을때보다 가중치 배열의 크기는 훨씬 작아지고 입력의 특징을 더 잘 찾기 때문에 이미지 분류에서 뛰어난 성능을 발휘할 수 있다.
++ 합성곱의 가중치를 필터(fitlter) 또는 커널(kernel)이라고도 부른다.
+
+### 풀링 연산
++ 합성곱 신경망에서 특별히 합성곱이 일어나는 층을 합성곱층, 풀링이 일어나는 층을 풀링층. 합성곱층과 풀링층에서 만들어진 결과를 특성 맵(feature map)이라고 부름.
++ 풀링이란 특성 맵을 스캔하며 최대값을 고르거나 평균값을 계산하는 것
++ 합성곱 신경망에서는 최대 풀링과 평균 풀링을 주로 사용
+  - 최대풀링은 특성 맵 위를 스캔하며 최댓값을 고름. 풀링 영역의 크기는 보통 2x2를 지정. 일반적으로 스트라이드는 풀링의 한 모서리 크기로 지정하여 영역이 겹치지 않도록 스캔.
+  - 평균 풀링은 풀링 영역의 평균값을 계산. 평균 풀링은 합성곱층을 통과하는 특징들을 희석시킬 가능성이 높아 연구자들은 보통 평균풀링보다 최대 풀링을 선호.
+
+### 렐루 함수
++ 은닉층에 시그모이드 함수를 활성화 함수로 사용. 출력층은 이진 분류일 경우에는 시그모이드 함수를 사용, 다중 분류일 경우에는 소프트 맥스 함수 사용. 렐루 함수는 주로 합성곱층에 적용되는 활성화 함수로, 합성곱 신경망의 성능을 더욱 높여준다.
++ 렐루 함수는 0보다 큰 값은 그대로 통과시키고 0보다 작은 값은 0으로 만듬.
+  - y = x (x>0), 0 (x<=0)
++ ![ReLU](/img/8_3_01.jpg)
+  - 합성곱층의 채널 수는 이미지와 커널의 채널은 같아야함. 합성곱층에서 만들어진 특성맵에 활성화 함수로 렐루함수 적용.
+  - 풀링층에서 풀링 후 특성맵을 1열로 펼쳐 완전연결층에서 다중분류(소프트맥스 함수 적용)하여 출력
+
+## 케라스 이용
+### 합성곱 신경망 만들기
+1. 필요한 클래스들을 임포트 하기
 ```
-import matplotlib.pyplot as plt
-print(cancer.feature_names[[2,3]])
-plt.boxplot(x_train[:,2:4])
-plt.xlabel('feature')
-plt.ylabel('value')
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+```
+2. 합성곱층 쌓기
+```
+conv1 = tf.keras.Sequential()   
+conv1.add(Conv2D(10, (3, 3), activation='relu', padding='same', input_shape=(28, 28, 1))) 
+```
+  + Conv2D 클래스의 첫 번쨰 매개변수는 합성곱 커널의 개수. 두 번째 매개변수는 합성곱 커널의 크기로 높이와 너비를 튜플로 전달(합성곱 커널로는 전형적으로 3x3 또는 5x5 크기를 많이 사용)
+  + Activation 매개변수에 렐루 활성화 함수를 지정. 세임 패딩
+3. 풀링층 쌓기
+```
+conv1.add(MaxPooling2D((2, 2)))
+```
+  + 풀링층 추가. MaxPooling2D 클래스이 첫번째 매개변수는 풀링의 높이와 너비를 나타내는 튜플이며, 스트라이드는 strides 매개변수에 지정(기본값 풀링의 크기), 패딩은 padding 매개변수에 지정하며 기본값은 'valid'. 기본값 사용하므로 따로 지정 안함.
+4. 완전 연결층에 주입할 수 있도록 특성 맵 펼치기
+```
+conv1.add(Flatten())
+```
+  + Flatten 클래스로 펼치기
+5. 완전 연결층 쌓기
+```
+conv1.add(Dense(100, activation='relu'))   
+conv1.add(Dense(10, activation='softmax'))
+``` 
+  + 첫 번째 완전 연결층에는 100개의 뉴런을 사용하고 렐루 활성화 함수를 적용.
+  + 마지막 출력층에는 10개의 클래스에 대응하는 10개의 뉴런을 사용하고 소프트맥스 활성화 함수를 적용.
+6. 모델 구조 살펴보기
+```
+conv1.summary()
+```
+```
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d (Conv2D)              (None, 28, 28, 10)        100       
+_________________________________________________________________
+max_pooling2d (MaxPooling2D) (None, 14, 14, 10)        0         
+_________________________________________________________________
+flatten (Flatten)            (None, 1960)              0         
+_________________________________________________________________
+dense (Dense)                (None, 100)               196100    
+_________________________________________________________________
+dense_1 (Dense)              (None, 10)                1010      
+=================================================================
+Total params: 197,210
+Trainable params: 197,210
+Non-trainable params: 0
+_________________________________________________________________
+```
+  + 합성곱층의 출력 크기는 배치 차원을 제외하고 28x28x10. 합성곱 커널은 10개이므로 마지막 차원이 10. 모델 파라미터의 개수는 전체 가중치의 크기와 커널마다 하나씩 절편을 추가하면(3x3x1x10+10 = 100)
+  + 풀링층과 Flatten층에는 가중치가 없음.
+  + 첫 번째 완전 연결층에는 1,960개(14x14x10)의 입력이 100개의 뉴런에 연결되므로 가중치 개수는 196,100개(1,960x100+100)
+  + 두 번째 완전 연결층의 가중치 개수는 1,010개(100x10+10). 가중치의 개수를 보면 완전 연결층에 비해 합성곱층의 가중치 개수가 아주 적다. 그래서 합성곱층을 여러개 추가해도 학습할 모델 파라미터의 개수가 크게 늘지 않기 때문에 계산 효율성이 좋다.
+
+### 합성곱 신경망 모델 훈련하기
+1. 모델을 컴파일
+```
+conv1.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+```
+  + 다중 분류를 위한 크로스 엔트로피 손실 함수 사용. 정확도 관찰을 위한 metrics 매개변수에 accuracy를 리스트로 전달.
+2. 아담 옵티마이저 사용하기
+  + 최적화 알고리즘으로 경사하강법 대신 적응적 학습률 알고리즘 중  하나인 아담(Adam : Adaptive Moment Estimation) 옵티마이저를 사용.
+  + 아담은 손실 함수의 값이 최적값에 가까워질수록 학습률을 낮춰 손실 함수의 값이 안정적으로 수렴될 수 있게 해준다.
+3. 20번의 에포크 동안 훈련
+```
+history = conv1.fit(x_train, y_train_encoded, epochs=20,  validation_data=(x_val, y_val_encoded))
+```
+4. 그래프로 확인
+```
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train_loss', 'val_loss'])
 plt.show()
 ```
-두 특성의 스케일 차이가 크다. mean perimeter는 주로 100~200에 값들이 위치한 반면에 mean area는 200~2,000 사이에 값들이 집중되어 있다
 ```
-class SingleLayer:
-  def __init__(self, learning_rate=0.1):
-    self.w = None
-    self.b = None
-    self.losses = []
-    self.val_losses = [] # 검증 세트의 손실 변수 추가
-    self.w_history = []
-    self.lr = learning_rate
-  def forpass(self, x):
-    z = np.sum(x * self.w) + self.b
-    return z
-
-  def backprop(self, x, err):
-    w_grad = x * err
-    b_grad = 1 * err
-    return w_grad, b_grad
-
-  def fit(self, x, y, epochs=100, x_val= None, y_val=None):
-    self.w = np.ones(x.shape[1])
-    self.b = 0
-    self.w_history.append(self.w.copy())
-    np.random.seed(42)
-    for i in range(epochs):
-      loss = 0
-      indexes = np.random.permutation(np.arange(len(x)))
-      for i in indexes:
-        z = self.forpass(x[i])
-        a = self.activation(z)
-        err = -(y[i] - a)
-        w_grad, b_grad = self.backprop(x[i], err)
-        self.w -= self.lr * w_grad  # 가중치 업데이트(학습률 적용)
-        self.b -= b_grad            # 절편 업데이트
-        # 가중치 기록
-        self.w_history.append(self.w.copy())
-        # 안전한 로그 계산을 위해 클리핑한 후 손실을 누적
-        a = np.clip(a, 1e-10, 1-1e-10)
-        loss += -(y[i]*np.log(a)+(1-y[i])*np.log(1-a))
-
-      # 에포크마다 평균 손실을 저장
-      self.losses.append(loss/len(y))
-      # 검증 세트에 대한 손실을 계산
-      self.update_val_loss(x_val, y_val)
-
-  def update_val_loss(self, x_val, y_val):
-    if x_val is None:
-      return
-    val_loss = 0
-    for i in range(len(x_val)):
-      z = self.forpass(len(x_val))
-      a = self.activation(z)
-      a = np.clip(a, 1e-10, 1-1e-10)
-      val_loss += -(y_val[i]*np.log(a)+(1-y_val[i])*np.log(1-a))
-    self.val_losses.append(val_loss/len(y_val))
-  #활성화함수
-  def activation(self, z):
-    a = 1 / (1 + np.exp(-z))                    # 시그모이드 계산
-    return a
-
-  #예측 수행
-  def predict(self, x):
-    z = [self.forpass(x_i) for x_i in x]
-    #a = self.activation(np.array(z))
-    return np.array(z) > 0  # 계단함수 사용.
-  
-  def score(self, x, y):
-    return np.mean(self.predict(x) == y)
-```
-learning rate는 학습률로 하이퍼파라미터이다. 이 값으로 가중치의 업데이트 양을 조절 (보통 0.001, 0.01)등의 로그 스케일로 학습률을 지정하여 테스트.
-가중치가 바뀔 떄마다 w_history 리스트에 가중치를 기록한다.넘파이 배열을 리스트에 추가하면 실제 값이 복사되는 것이 아니라 배열을 참조하기 때문에 가중치 변수 self.w의 값이 바뀔 때마다 그 값을 복사하여 w_history에 추가해야 한다. 또 w_grad에 학습률 self.lr을 곱하는 연산이 추가되어 가중치 업데이트 양을 조절.
-```
-layer1 = SingleLayer()
-layer1.fit(x_train, y_train)
-layer1.score(x_val, y_val)
-```
-```
-w2 = []
-w3 = []
-for w in layer1.w_history:
-  w2.append(w[2])
-  w3.append(w[3])
-plt.plot(w2, w3)
-plt.plot(w[-1], w3[-1], 'ro')
-plt.xlabel('w[2]')
-plt.ylabel('w[3]')
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train_accuracy', 'val_accuracy'])
 plt.show()
 ```
-세번째, 네번째 요소 w[2], w[3]은 각각 mean perimeter와 mean area 특성에 대한 가중치이다.
-mean perimeter에 비해 mean area의 스케일이 크므로 w3 값이 학습 과정에서 큰 폭으로 흔들리며 변화하고 있다. 반면에 w2 값은 0부터 시작하여 조금씩 최적값에 가까워진다. 이 그래프의 현상을 'w3에 대한 그레이디언트가 크기 때문에 w3축을 따라 가중치가 크게 요동치고 있다.'라고 말한다. 이러한 현상을 줄이기 위해 스케일을 조정한다.
-신경망에서 자주 사용하는 스케일 조정 방벙중 하나는 표준화(standardization)이다. 표준화는 특성값에서 평균을 뺴고 표준 편차로 나눈다. 표준화를 하면 평균이 0이고 분산이 1인 특성이 만들어진다.  x=(x−μ)/s 
-사이킷런에는 StandardScaler 클래스가 있다. 여기서는 직접 표준화 구현
+과대적합 
 ```
-train_mean = np.mean(x_train, axis=0)
-train_std = np.std(x_train, axis=0)
-x_train_scaled = (x_train - train_mean) / train_std
-```
-넘파이의 mean(), std()함수로 평균과 표준 편차를 계산
-표준화를 구현한 다음에 특성별로 스케일을 조정
-```
-layer2 = SingleLayer()
-layer2.fit(x_train_scaled, y_train)
-w2 = []
-w3 = []
-for w in layer2.w_history:
-  w2.append(w[2])
-  w3.append(w[3])
-plt.plot(w2,w3)
-plt.plot(w2[-1], w3[-1], 'ro')
-```
-검증 결과가 좋지 않다. 검증세트도 표준화 전처리를 적용해야함
-```
-val_mean = np.mean(x_val, axis=0)
-val_std = np.std(x_val, axis=0)
-x_val_scaled = (x_val - val_mean) / val_std
-layer2.score(x_val_scaled, y_val)
-```
-```
-plt.plot(x_train[:50,0], x_train[:50, 1],'bo')
-plt.plot(x_val[:50,0],x_val[:50,1], 'ro')
-plt.xlabel('fature 1')
-plt.ylabel('fature 2')
-plt.legend(['train set', 'val. set'])
-plt.show()
-```
-```
-plt.plot(x_train_scaled[:50,0], x_train_scaled[:50, 1],'bo')
-plt.plot(x_val_scaled[:50,0],x_val_scaled[:50,1], 'ro')
-plt.xlabel('fature 1')
-plt.ylabel('fature 2')
-plt.legend(['train set', 'val. set'])
-plt.show()
-```
-훈련 세트와 검증 세트가 다른 비율로 스케일이 조정된 경우, 훈련 세트와 검증 세트의 점과 점 사이의 거리가 변환된 이후에 그대로 유지되지 않음. 데이터를 제대로 전처리 했다면 훈련 세트와 검증 세트의 거리가 그대로 유지되어야 함. 점과 점사이 거리가 달라지 ㄴ이유는 훈련 세트와 검증 세트를 각각 다른 비율로 전처리했기 떄문이다.
-```
-x_val_scaled = (x_val - train_mean) / train_std
-plt.plot(x_train_scaled[:50,0], x_train_scaled[:50, 1],'bo')
-plt.plot(x_val_scaled[:50,0],x_val_scaled[:50,1], 'ro')
-plt.xlabel('fature 1')
-plt.ylabel('fature 2')
-plt.legend(['train set', 'val. set'])
-plt.show()
+loss, accuracy = conv1.evaluate(x_val, y_val_encoded, verbose=0)   
+print(accuracy)
 ```
 
-```
-layer3 = SingleLayer()
-layer3.fit(x_train_scaled, y_train, x_val=x_val_scaled, y_val=y_val)
-layer3.update_val_loss(x_val_scaled, y_val)
-```
-훈련세트와 검증세트의 에포크당 손실률을 그래프로 그려본다
-```
-plt.ylim(0, 0.3)
-plt.plot(layer3.losses)
-plt.plot(layer3.val_losses)
-plt.xlabel('loss')
-plt.ylabel('epoch')
-plt.legend(['train loss', 'val_loss'])
-plt.show()
-```
-#20번의 에포크까지 모델을 훈련
-layer4 = SingleLayer()
-layer4.fit(x_train_scaled, y_train, epochs=20)
-layer4.score(x_val_scaled, y_val)
 
-## 5장 규제
+### 과대적합을 줄이는 방법
++ 드롭아웃 : 무작위로 일부 뉴런을 비활성화 시킴. 무작위로 일부 뉴런을 비활성화시키면 특정 뉴런에 과도하게 의존하여 훈련하는 것을 막아준다.
++ 텐서플로에서는 드롭아웃의 비율만큼 뉴런의 출력을 높인다.
+```
+from tensorflow.keras.layers import Dropout   
+conv1.add(Dropout(0.5))
+```
+
+## 순환 신경망
++ 날씨 정보와 같이 우리가 다루는 데이터 중에는 독립적이지 않고 샘플이 서로 연관되어 있는 경우가 많다. 온도를 매시간 층정하여 데이터 세트로 만든것 처럼 일정 시간 간격으로 배치된 데이터를 시계절(time series)데이터라고 부른다.
++ 시계열 데이터를 포함하여 샘플에 순서가 있는 데이터를 일반적으로 순차 데이터(sequential data)라고 부른다.
++ 이러한 순서가 있는 데이터를 처리하기 위해 개발된 것이 순환 신경망이다.
++ ![순환신경망](/img/9_1_01.jpg)
+  - 은닉층의 출력이 다시 은닉층의 입력으로 사용. 이러한 순환 구조가 있는 층을 순환층이라고 부른다.
+  - 은닉층에서 순환된 출력은 다음 입력을 처리할 때 현재 입력과 같이 사용.
++ 순환 신경망의 뉴런을 셀(cell)이라고 부른다. 순환 신경망의 셀에서는 활성화 함수로 하이퍼볼릭 탄젠트 함수를 많이 사용한다.
++ 텐서플로에서 가장 기본적인 순환층은 SimpleRNN 클래스이다.
++ 순환 신경망에서 텍스트 데이터를 원-핫 인코딩으로 전처리하면 입력 데이터 크기와 사용할 수 있는 영단어의 수가 제한된다는 문제가 있다. 단어 임베딩(word embedding)은 모델을 훈련하면서 같이 훈련되므로 훈련이 진행될수록 단어의 연관 관계를 더 정확하게 찾을수 있다.
++ 텐서플로는 Embedding 클래스로 단어 임베딩을 제공
+``` 
+from tensorflow.keras.layers import Enbedding
+```
++ TBPTT 방법은 그레이디언트가 탐임 스템 끝까지 전파되지 않으므로 타임 스템이 멀리 떨어진 영단어 사이의 관계를 파악하기 어렵다. 이런 경우에는 좀 더 긴 타임 스텝의 데이터를 처리하는 LSTM(long short-term memory) 순환 신경망을 사용한다.
+
 
 
