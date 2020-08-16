@@ -1,6 +1,6 @@
 ---
 title: Book - 딥러닝 입문 / 박해선
-date: 2020-07-20
+date: 2020-08-14
 categories: ["No.1 Hold"]
 ---
 
