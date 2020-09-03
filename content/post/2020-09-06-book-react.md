@@ -10,6 +10,10 @@ categories: ["No.1 Hold"]
 
 *   프로그래밍 인사이트 2019
 
+## 감상
+자바스크립트 경험이 거의 없고 생활코딩의 리액트 강좌만 들은 상태에서, 이책은 잘못된 선택이다. 기본지식이 부족한 것도 문제이지만 정리되지 않은 문장과 예문이라는 느낌이 강하게 든다. 자신이 아는 것과 그것을 다른이에게 가르치는 것은 서로 다른 문제이다. 또한 글쓰기는 또다른 문제이다. 한페이지를 읽고 넘어 가는데 너무 시간이 많이 걸리고 그 내용을 정리하려면 문장을 분해해서 다시 조합하여 정리해야한다. 말이 너무 어려워 끝내 책의 순서는 그대로 따라가되 내용은 검색하여 친절한 블로그의 도움을 받았다.       
+이 모든 문제는 나의 기본지식이 부족해서 그럴 것이다.    
+
 ## 리액트 프로젝트 시작하기
 1. createElement 구조
     - React.createElement(component, props, ...children) => ReactElement
@@ -163,8 +167,243 @@ npm start
 1. 단축 속성명
     - 새로 만들려는 객체의 속성값 일부가 이미 변수로 존재하면 간단하게 변수 이름만 작성
     - 속성값이 함수이면 function 키워드 없이 함수명만 
-2. 계산된 속성명
+2. 전개 연산자
+```
+const numbers = [1, 3, 7, 9];
+Math.max(...numbers);
+```
+    - 전개 연산자는 배열이나 객체의 모든 속성을 풀어놓을때 사용하는 문법
+    - 전개 연산자를 사용하면 동적으로 함수의 매개변수를 전달할 수 있다.
+```
+[1, ...[2, 3], 4];  //[1, 2, 3, 4]
+```
+    - 배열 리터럴에서 중간에 전개 연산자를 사용하면 전개 연산자 전후의 순서가 유지
+    - Date 생성자의 매개변수 순서대로 날짜 데이터를 관리하면 Date 객체를 쉽게 생성 가능
+3. 배열 비구조화
+    - 배열의 여러 속성값을 변수로 쉽게 할당
+```
+const arr = [1, 2];
+const [a, b] = arr;
+console.log(a); // 1
+console.log(b); // 2
+```
+```
+let a, b;
+[a, b] = [1, 2];
+```
+4. 객체 비구조화
+    - 객체의 여러 속성값을 변수로 쉽게 할당할 수 있는 문법
+```
+const obj = { age: 21, name: 'mike'};
+const {age, name} = obj;
+consol.log(age);  // 21
+consol.log(name);  // mike
+```
+    - 객체 비구조화에서는 중괄호 사용
+    - 배열 비구조화에서는 배열의 순서가 중요, 객체 비구조화에서 순서는 무의미
+5. 매개변수 기본값
+```
+function printLog(a = 1){
+    console.log({a});
+}
+printLog();  // {a: 1}
+```
+    - 인수 없이 함수를 호출하므로 a에는 undefined가 입력된다. 기본값이 정의된 매개변수에 undefined를 입력하면 정의된 기본값 1이 사용된다.
+6. 나머지 매개변수
+```
+function printLog(a, ...rest){
+    console.log({a, rest});
+}
+printLog(1, 2, 3);  // { a: 1, rest: [2, 3]}
+```
+    -하나의 인자를 제외한 나머지를 rest 매개변수에 할당
+7. 명명된 매개변수
+```
+const numbers = [10, 20, 30, 40];
+const result1 = getValues(numbers, 5, 25);
+const result2 = getValues({numbers, greaterThan: 5, lessThan: 25});
+```
+    - result1의 경우 매개변수의 이름이 보이지 않아 인수가 의미하는 바를 알기 어렵다
+    - result2처럼 명명된 매개변수를 이용하면 매개변수의 이름이 노출된다.
+8. 화살표 함수
+    - ES6에서는 화살표 함수를 이용해 함수를 정의하는 방법이 추가되었다.
+```
+const add = (a, b) => a + b;
+console.log(add(1, 2));  // 3
+const add5 = a => a + 5;
+console.log(add5(1));  //6
+const addAndReturnObject = (a, b) => ({result: a + b});
+console.log(addAndReturnObject(1, 2).result); //3
+```
+    - 화살표 함수를 중괄호를 감싸지 않으면 오른쪽의 계산 결과가 반환(return 키워드 생략 가능)
+    - 매개변수가 하나라면 매겨변수를 감싸는 소괄호 생략 가능
+    - 객체를 반환해야 한다면 소괄호로 감싸야 함.
+```
+const add = (a, b) => {
+    if (a <= 0 || b <= 0 ) {
+        throw new Error ('must be positive number');
+    }
+    return a + b;
+}
+```
+    - 화살표 함수에 여러줄의 코드가 필요하다면 중괄호로 묶고, 반환값에는 return 키워드 사용
+    - this와 arguments가 바인딩되지 않는다.
+9. promise
+    - 프로미스(promise)는 비동기 상태를 값으로 다룰 수 있는 객체
+    - 자바스크립트에서 비동기 프로그래밍의 한 가지 방식으로 콜백(callback) 패턴을 많이 사용하나, 콜배깅 조금만 중첩돼도 코드가 상당히 복잡해지는 단점이 있다.
+    - 프로미스를 사용하면 비동기 프로그래밍을 할 때 코드를 순차적으로 작성할 수 있다.
+    - 프로미스의 세 가지 상태
+        + 대기 중(pending): 결과를 기다리는 중
+        + 이행됨(fulfilled): 수행이 정상적으로 끝났고 결과값을 갖고 있음.
+        + 거부됨(rejected): 수행이 비정상적으로 끝남
+        + settle:수행된 상태(성공 또는 실패)
+```
+const p1 = new Promise((resolve, reject) => {
 
+});
+const p2 = Promise.reject('error message');
+const p3 = Promise.resolve(param);
+```
+    - new 키워드를 사용해서 프로미스를 생성. 이때 대기 중 상태가 된다.
+    - new 키워드를 사용하지 않고 Promise.reject를 호출하면 거부됨 상태인 프로미스가 생성
+    - Promise.resolve를 호출해도 프로미스가 생성.
+```
+requestData().then(onResolve, onReject);
+Promise.resolve(123).then(data => console.log(data));
+Promise.reject('err').then(null, error => console.log(error));
+```
+    - then은 처리됨 상태가 된 프로미스를 처리할 떄 사용되는 메서드
+    - catch는 프로미스 수행 중 발생한 예외를 처리하는 메서드. then 메서드의 onReject 함수와 같은 역할
+    - finally는 프로미스가 이행됨 또는 거부됨 상태일 때 호출되는 메서드
+    - promise.all 병렬로 처리
+    - promise.race 여러 개의 프로미스 중에서 가장 빨리 처리된 프로미스를 반환
+10. promise 2
+    - 동기식 처리 모델: 직렬적으로 task를 수행. 순차적으로 실행되므로 어떤 작업이 수행 중이면 다음 task는 대기
+    - 비동기식 처리 모델: 병렬적으로 task를 수행. task가 종료되지 않은 상태라 하더라도 대기하지 않고 즉시 다음 task를 실행
+    - 자바스크립트의 대부분의 DOM 이벤트와 Timer함수, Ajax 요청은 비동기식 처리 모델로 동작한다.
+    - 자바스크립트는 요청을 병렬로 처리하여 다른 요청이 블로킹 되지 않는 장점이 있다.
+    - 비동기 처리를 위해 콜백 패턴을 사용하면 처리 순서를 보장하기 위해 여러 개의 콜백 함수가 네스팅(nesting, 중첩)되어 복잡도가 높아지는 콜백 헬이 발생하는 단점이 있다. 가독성을 나쁘게 하며 실수를 유발.
 
-    
+### 리액트 개념
+1. 상탯값과 속성값으로 관리하는 UI 데이터
+    - UI 데이터는 컴포넌트 내부에서 관리되는 상태값(state)과 부모 컴포넌트에서 내려 주는 속성값(props)으로 구성
+    - 리액트는 화면을 그리는 모든 코드는 컴포넌트의 렌더(render) 함수로 작성. UI 데이터가 변경되면 리액트가 렌터 함수를 이용해서 화면을 자동으로 갱신해 주며, 이것이 리액트의 가장 중요한 역할
+    - 상태값을 변경해주는 setState 메서드는 비동기로 동작
+2. 리액트 요소와 가상 돔
+    - 리액트는 렌더링 성능을 위해 가상 돔을 활용. 메모리에 가상 돔을 올려 놓고 이전과 이후의 가상 돔을 비교하여 변경된 부분만 실제 돔에 반영
+    - 리액트에서 데이터 변경에 의한 화면 업데이트는 렌더 단계와 커밋 단계를 거친다.
+    - 렌더 단계는 실제 돔에 반영할 변경 사항을 파악하는 단계이고, 커밋 단계는 파악된 변경 사항을 실제 돔에 반영하는 단계
+3. 생명 주기 메서드
+    - 모든 컴포넌트는 다음과 같이 세 단계를 거친다. 초기화 단계, 업데이트 단계, 소멸 단계
+    - 각 단계 속에서 호출되는 메서드를 생명 주기 메서드라고 부른다.   
+    - ![method](/img/react_03_01.jpg)
+    - 렌더링 시 예외가 발생하면 호출되는 메서드
+        + static getDerivedStateFromErro()
+        + componentDidCatch()
+    - constructor 메서드
+    - ```
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentMovie: props.age < 10 ? '뽀로로' : '어벤져스',
+        };
+    }
+    ```
+        + constructor 메서드 내부에서 반드시 super 함수를 호출해야 한다.
+        + 상태값을 직접 할당하는 것은 constructor 메서드에서만 허용
+        + constructor 메서드 내부에서 호출되는 setState 메서드는 무시된다. setState 메서드 호출은 컴포넌트가 마운트된 이후에만 유효
+    - getDerivedStateFromProps 메서드
+        + 속성값을 이용해서 새로운 상태값을 만들 때 사용되며 render 메서드가 호출되기 직전에 호출된다.
+        + static getDerivedStateFromProps (props, state)
+        + 정적 메서드이기 떄문에 함수 내부에서 this객체에 접근할 수 없다.
+    - render 메서드
+        + 컴포넌트를 정의할 때 화면에 보여질 반환값의 내용을 결정
+        + 배열을 반환할 떄 각 리액트 요소는 key 속성값을 갖고 있어야 한다.
+        + 리액트 프래그먼트<React.Fragment>를 사용하면 내부의 리액트 요소에 key속성값을 부여하지 않아도 된다.
+        + null 또는 bool을 반환하면 아무것도 렌더링하지 않는다.
+        + 리액트 포털을 사용하면 컴포넌트의 현재 위치와는 상관없이 특정 돔 요소에 렌더링할 수 있다
+    - componentDidMount
+        + render 메서드의 첫 번째 반환값이 실제 돔에 반영된 직후 호출된다.
+        + render 메서드에서 반환한 리액트 요소가 돔에 반영되어야 알수 있는 값을 얻을 수 있다.
+    - shouldComponentUpdate 메서드
+        + 성능 최적화를 위해 존재
+        + shouldComponentUpdate(nestProps, nextState)
+        + 불 타입을 반환 한다. True를 반환하면 render 메서드가 호출
+        + 변수 비교를 통해 render 메서드를 호출할지 결정하므로 성능과 관련있다.
+    - getSnapshotBeforeUpdate 메서드
+        + 렌더링 결과가 실제 돔에 반영되기 직전에 호출
+        + 호출 되는 시점에 이전 돔 요소의 상태값을 가져오기 좋다
+    - componentDidUpdate 메서드
+        + 업데이트 단계에서 마지막으로 호출되는 생명 주기 메서드
+        + componentDidUpdate(prevProps, prevState, snapshot)
+        + 가상 돔이 실제 돔에 반영된 후 호출
+        + 새로 반영된 돔의 상태값을 가장 빠르게 가져올 수 있는 메서드
+        + 속성값이나 상태값이 변경된 경우 API를 호출 하는 용도로 사용되기도 한다.
+    - componentWillUnmount 메서드
+        + 소멸 단계에서 호출되는 유일한 생명 주기 메서드
+        + 끝나지 않은 네트워크 요청을 취소, 타이머 해제, 구독 해제 등의 작업을 처리하기 좋다.
+    - getDerivedStateFromError, componentDidCatch 메서드
+        + 생명 주기 메서드에서 예외가 발생하면 getDerivedStateFromError, componentDidCatch 메서드를 구현한 가장 가까운 부모 컴포넌트를 찾는다.
+        + getDerivedStateFromError(error) 에러 정보를 상태값에 저장해서 화면에 나타내는 용도
+        + componentDidCatch(error, info) 에러 정보를 서버로 전송하는 용도
+4. 콘텍스트 API로 데이터 전달하기
+    - 상위 컴포넌트에서 하위 컴포넌트로 데이터를 전달할 때 속성값이 사용되는데 많은 수의 하위 컴포넌트로 전달할 때에는 속성값을 내려주는 코드를 반복적으로 작성해야 하는 문제가 있다.
+    - 콘텍스트 API를 사용하면 컴포넌트 중첩 구조가 복잡한 상황에서도 비교적 쉽게 데이터를 전달할 수 있다.
+    - React.createContext(defaultValue) => {Provider, Cosumer}
+    - 상위 컴포넌트에서는 Provider 컴포넌트를 이용해서 데이터를 전달
+    - 하위 컴포넌트에서는 Cosumer 컴포넌트를 이용해서 데이터를 사용. Consumer컴포넌트는 데이터를 찾기 위해 상위로 올라가면서 가장 가까운 Provider 컴포넌트를 찾는다. 찾지 못하면 기본값을 사용
+5. ref 속성값으로 자식 요소에 접근
+    - 돔 요소에 직접 접근해야 할때 ref 속성값을 이용하면 자식 요소에 직접 접근할 수 있다.
 
+### 컴포넌트 작성
+1. 컴포넌트 파일 작성법
+    - 코드를 그룹으로 나누고 우선순위에 따라 배치
+        + 속성값 타입 정의 코드
+        + 상태값 초기화 코드
+        + render 메서드를 제외한 나머지 생명 주기 메서드
+        + 생명 주기 메서드를 제외한 나머지 메서드
+        + render 메서드
+        + 컴포넌트 외부에서 정의하는 변수와 함수
+    - 속성값 타입 정의 : prop-types
+        + prop-types는 속성값의 타입 정보를 정의할 때 사용하는 리액트 공식 패키지
+        + 동적 타입의 언어는 큰 규모의 프로그램을 작성할 때 생산성이 오히려 떨어진다.
+        + 컴포넌트 사용 시 속성값에 잘못된 타입이 입력되면 콘솔에 에러 메시지 출력
+        ```
+        class MyComponent extends React.Component {
+            static propTypes = {
+                //리액트 요소
+                menu: PropTypes.element,
+
+                //렌더 함수가 리턴할 수 있는 모든 것
+                description: PropTypes.node,
+
+                //Message 클래스로 생성된 모든 객체
+                message: PropTypes.instanceOf(Message),
+
+                //배열에 포함된 값 중에서 하나를 만족
+                menu: PropTypes.oneOfType([PropTypes.number, ProTypes.string]),
+
+                //특정 타입만 포함하는 배열
+                age: ProTypes.arrayOf(ProTypes.number),
+
+                //객체 속성값 타입 정의
+                info: PropTypes.shape({
+                    color: proTypes.string,
+                    weight: proTypes.number,
+                }),
+
+                //객체에서 모든 속성값의 타입이 같은 경우
+                infos: PropTypes.objectOf(PropTypes.number),
+            };
+        }
+    - 조건부 렌더링
+        ```
+        const v1 = 'ab' && 0 && 2;  //v1 === 0
+        const v2 = 'ab' && 2 && 3;  //v2 === 3
+        const v3 = 'ab' || 0;  //v3 === 'ab'
+        const v4 = '' || 0 || 3;  //v4 === 3
+        ```
+        + &&, || 연산자 모두 마지막으로 검사한 값을 반환
+        + && 연산자는 첫 거짓(false) 또는 마지막 값을 반환하고, ||연산자는 첫 참(True) 또는 마지막 값을 반환 한다.
+        + 특정 조건을 만족해야 렌더링할 리액트 요소를 && 연산자 끝에 작성하고 앞쪽에는 해당 조건을 작성하는 방식으로 조건부 렌더링을 구현
+        + && 연산자를 사용할 때 주의해야 할 점은 변수가 숫자 타입인 경우 0은 거짓이고 문자열 타입인 경우 빈 문자열도 거짓이다.
